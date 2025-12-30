@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You</title>
+    <style>
+#passwordBox {
+            background: rgba(255,255,255,0.95);
+            padding: 40px 50px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(255,105,180,0.3);
+            max-width: 420px;
+            width: 90%;
+            animation: fadeIn 0.6s ease;
+        }
+
+        /* 💌 fade out setelah benar */
+        .fade-out {
+            animation: fadeOut 0.8s forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* penting */
+            padding: 20px;
+            position: relative;
+            overflow-y: auto; /* ✅ scroll hidup */
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            bottom: -150px;
+            right: -150px;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 700px;
+            min-height: 500px;
+            border-radius: 30px;
+            box-shadow: 0 30px 80px rgba(255, 105, 180, 0.3);
+            padding: 50px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 192, 203, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.8s ease-in;
+            position: relative;
+            z-index: 2;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        h1 {
+            color: #ff69b4;
+            text-align: center;
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.2);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.2); }
+            to { text-shadow: 2px 2px 20px rgba(255, 105, 180, 0.5); }
+        }
+
+        h2 {
+            color: #ff85c1;
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ff69b4, transparent);
+            border-radius: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+            animation: fadeIn 1s ease-in 0.3s both;
+        }
+
+        .content {
+            text-align: justify;
+            line-height: 2;
+            color: #444;
+            margin: 30px 0;
+            font-size: 1.05em;
+            background: rgba(255, 240, 245, 0.5);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid #ff69b4;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.1);
+        }
+
+        .content p {
+            margin-bottom: 15px;
+        }
+
+        .heart {
+            text-align: center;
+            font-size: 4em;
+            margin: 20px 0;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            filter: drop-shadow(0 5px 10px rgba(255, 105, 180, 0.3));
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.15); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            gap: 15px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ffb6c1 0%, #ff69b4 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-family: 'Georgia', serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.5);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-number {
+            text-align: center;
+            color: #ff69b4;
+            font-size: 1em;
+            margin-top: 30px;
+            font-weight: bold;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .decorative-element {
+            position: absolute;
+            font-size: 2em;
+            opacity: 0.2;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .decorative-element:nth-child(1) {
+            top: 20px;
+            left: 20px;
+        }
+
+        .decorative-element:nth-child(2) {
+            top: 30px;
+            right: 30px;
+            animation-delay: 1s;
+        }
+
+        .decorative-element:nth-child(3) {
+            bottom: 40px;
+            left: 40px;
+            animation-delay: 2s;
+        }
+
+        .decorative-element:nth-child(4) {
+            bottom: 30px;
+            right: 20px;
+            animation-delay: 1.5s;
+        }
+
+        /* Sparkles effect */
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff69b4;
+            border-radius: 50%;
+            animation: sparkle 2s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        .sparkle:nth-child(1) { top: 15%; left: 20%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: 25%; right: 15%; animation-delay: 0.5s; }
+        .sparkle:nth-child(3) { bottom: 20%; left: 15%; animation-delay: 1s; }
+        .sparkle:nth-child(4) { bottom: 30%; right: 20%; animation-delay: 1.5s; }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+            
+            .content {
+                font-size: 1em;
+                padding: 20px;
+            }
+        }
+
+        .shake {
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%   { transform: translateX(0); }
+            25%  { transform: translateX(-5px); }
+            50%  { transform: translateX(5px); }
+            75%  { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <body>
+
+<!-- ===== PASSWORD OVERLAY ===== -->
+<div id="passwordOverlay" style="
+    position:fixed;
+    inset:0;
+    background:linear-gradient(135deg,#ffc0cb,#ffb6c1);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+">
+
+    <!-- INI KOTAK PASSWORD -->
+    <div id="passwordBox">
+
+        <h2 style="color:#ff69b4; margin-bottom:15px;">
+            Masukkan Password
+        </h2>
+
+        <p style="color:#666; margin-bottom:25px; font-style:italic;">
+            Halaman ini khusus untuk orang tersayang 💕
+        </p>
+
+        <input 
+            type="password"
+            id="passwordInput"
+            placeholder="❤️❤️❤️❤️❤️❤️"
+            style="
+                width:100%;
+                padding:15px;
+                border-radius:20px;
+                border:2px solid #ffb6c1;
+                outline:none;
+                font-size:20px;
+                letter-spacing:6px;
+                text-align:center;
+                margin-bottom:20px;
+            "
+        >
+
+        <button onclick="checkPassword()" style="
+            padding:12px 30px;
+            border:none;
+            border-radius:25px;
+            background:linear-gradient(135deg,#ffb6c1,#ff69b4);
+            color:white;
+            font-size:1.05em;
+            cursor:pointer;
+        ">
+            Masuk
+        </button>
+
+        <p id="errorText"
+           style="color:#ff4d6d; margin-top:15px; display:none;">
+           Password salah 😢
+        </p>
+
+    </div>
+</div>
+<!-- ===== END PASSWORD ===== -->
+
+<div class="container">
+    <div class="container">
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+
+        <!-- Halaman 1: Cover -->
+        <div class="page active" id="page1">
+            <div class="decorative-element">🌸</div>
+            <div class="decorative-element">💝</div>
+            <div class="decorative-element">🌹</div>
+            <div class="decorative-element">✨</div>
+            
+            <div class="heart">💕</div>
+            <h1>To my favorite person… </h1>
+            <p class="subtitle">I hope these words bring a smile to your face and warmth to your heart.</p>
+            <div class="content" style="text-align: center;">
+                <p>Di tengah hiruk pikuk dunia yang terus berputar, ada satu hal yang membuatku percaya bahwa hidup ini indah—kehadiranmu.</p>
+                <p>Ini adalah cerita tentang aku, tentang kamu, tentang kita.</p>
+            </div>
+            <div class="navigation">
+                <div></div>
+                <button onclick="changePage(2)">Mulai →</button>
+            </div>
+        </div>
+
+        <!-- Halaman 2 -->
+        <div class="page" id="page2">
+            <div class="decorative-element">🦋</div>
+            <div class="decorative-element">💫</div>
+            
+            <h2>Perempuan yang Sulit Dipahami</h2>
+            <div class="content">
+                <p>Aku selalu merasa menjadi perempuan yang sulit dipahami. Bahkan kadang aku sendiri tidak mengerti apa yang ada di pikiranku. Rasanya seperti berada di dalam labirin yang dindingnya terus berubah—dan aku berjalan di dalamnya tanpa peta. Orang-orang datang dan pergi dalam hidupku, meninggalkan jejak, luka, atau pelajaran. Kadang aku bertanya-tanya: apakah mereka pergi karena kekuranganku, atau memang begitulah hidup bekerja, datang dan pergi tanpa peringatan?</p>
+                <p>Setelah putus dulu, aku masuk ke fase life after breakup. Lucu, karena aku tidak sedih. Tidak marah. Tidak patah. Aku hanya merasa lega, seperti ada ruang kosong di dalam diriku yang tiba-tiba diisi oleh udara segar. Ada kebahagiaan kecil, entah dari mana, yang membuatku tersenyum sendiri di malam-malam sunyi.</p>
+            </div>
+            <div class="navigation">
+                <button onclick="changePage(1)">← Kembali</button>
+                <button onclick="changePage(3)">Lanjut →</button>
+            </div>
+            <div class="page-number">Halaman 2 dari 13</div>
+        </div>
+
+        <!-- Halaman 3 -->
+        <div class="page" id="page3">
+            <div class="decorative-element">💐</div>
+            <div class="decorative-element">🌺</div>
+            
+            <h2>Ketika Kita Bertemu Lagi</h2>
+            <div class="content">
+                <p>Beberapa bulan kemudian, hidup bercanda lagi. Aku bertemu dia—teman lamaku, yang dulu sempat asing karena jalannya masing-masing. Aku tidak menyangka kami bisa dekat lagi. Lebih mengejutkan lagi, kedekatan itu berkembang menjadi sesuatu yang lebih hangat. Kami mulai berbagi cerita, tawa, dan diam yang nyaman. Hingga akhirnya, aku bisa menyebutnya pacarku.</p>
+                <p>Sebelum resmi pacaran, aku harus jujur tentang sesuatu yang berat. Aku bilang padanya tentang penyakitku, kelenjar getah bening yang bermasalah sejak SMK, sejak 2019. Aku takut, tapi aku harus terbuka. Dan dia… dia bilang itu bukan masalah. Aku merasa lega. Untuk pertama kalinya, aku bisa bernapas tanpa takut dia akan lari.</p>
+            </div>
+            <div class="navigation">
+                <button onclick="changePage(2)">← Kembali</button>
+                <button onclick="changePage(4)">Lanjut →</button>
+            </div>
+            <div class="page-number">Halaman 3 dari 13</div>
+        </div>
+
+        <!-- Halaman 4 -->
+        <div class="page" id="page4">
+            <div class="decorative-element">🌙</div>
+            <div class="decorative-element">⭐</div>
+            
+            <h2>Ketika Hidup Menguji</h2>
+            <div class="content">
+                <p>Tetapi hidup tidak selalu ramah. Setelah beberapa bulan bersama, penyakitku memburuk. Pemeriksaan demi pemeriksaan membuatku lelah, secara fisik dan mental. Aku mulai berpikir bahwa aku hanya akan merepotkannya. Aku ingin dia punya pasangan yang sehat, yang ceria, bukan perempuan yang rapuh dan selalu khawatir seperti aku. Aku sempat ingin putus.</p>
+                <p>Tapi dia menolak. Dia memilih bertahan. Dan di situlah aku merasakan dua perasaan sekaligus—bahagia karena ada yang mau menerima aku apa adanya, sedih karena dia harus menghadapi semua ini bersamaku. Penyakitku, ketakutanku, semua hal yang membuatku merasa "tidak sempurna".</p>
+            </div>
+            <div class="navigation">
+                <button onclick="changePage(3)">← Kembali</button>
+                <button onclick="changePage(5)">Lanjut →</button>
+            </div>
+            <div class="page-number">Halaman 4 dari 13</div>
+        </div>
+
+        <!-- Halaman 5 -->
+        <div class="page" id="page5">
+            <div class="decorative-element">💔</div>
+            <div class="decorative-element">🕊️</div>
+            
+            <h2>Ketika Dunia Berhenti</h2>
+            <div class="content">
+                <p>Akhirnya, aku disarankan untuk operasi. Campur aduk rasanya—takut, kaget, tak percaya kalau penyakit ini benar-benar serius. Dan saat pemeriksaan terakhir, dokter bilang kemungkinan terindikasi kanker. Boom. Dunia seakan berhenti. Aku syok, sedih, ingin menangis. Tapi aku tidak berani menceritakan ini ke keluarga. Aku tidak ingin menambah beban pikiran mereka. Satu-satunya yang kutahu akan mengerti… adalah dia.</p>
+                <p>Dia terlihat sedih ketika aku bilang. Aku mencoba bercanda, mencairkan suasana, tapi kesedihan itu tetap ada. Aku merasa bersalah. Kasihan padanya. Aku pikir: "Dia tidak pantas dapat perempuan seperti aku." Tapi di balik semua rasa takut itu, aku bersyukur. Tuhan mengirimnya di saat yang tepat, untuk membuktikan bahwa aku masih layak dicintai.</p>
+            </div>
+            <div class="navigation">
+                <button onclick="changePage(4)">← Kembali</button>
+                <button onclick="changePage(6)">Lanjut →</button>
+            </div>
+            <div class="page-number">Halaman 5 dari 13</div>
+        </div>
+
+        <!-- Halaman 6 -->
+        <div class="page" id="page6">
+            <div class="decorative-element">🌈</div>
+            <div class="decorative-element">☀️</div>
+            
+            <h2>Alasanku Bertahan</h2>
+            <div class="content">
+                <p>Kadang aku bertanya pada diri sendiri: kalau bukan karena dia, mungkin aku sudah runtuh. Mungkin aku menyerah pada tubuhku, pada rasa sakit, pada hidup yang terlalu keras. Aku sesayang itu sama dia. Sampai rasanya dunia tanpa dia terasa hampa. Dia membuat hidupku masuk akal. Membuat dunia yang selalu mengguncang ini terasa sedikit lebih lembut. Aku ingin hidup dengannya. Aku ingin menghabiskan hari-hari di dunia yang cuma sekali ini bersamanya. Bukan hanya karena aku cinta, tapi karena di samping dia… aku merasa aman. Nyaman. Bahagia.</p>
+                <p>Ketika bersamanya, masalahku terasa mengecil. Beban hidup yang bertahun-tahun kupikul seakan lebih ringan hanya karena dia ada di sampingku. Ada saat-saat aku bertanya: "Kenapa hidup memberiku penyakit seberat ini?" Tapi lalu aku ingat… hidup juga memberiku dia. Dan rasanya seperti pesan semesta: aku masih layak bahagia, meski hanya lewat satu orang yang begitu berarti.</p>
+            </div>
+            <div class="navigation">
+                <button onclick="changePage(5)">← Kembali</button>
+                <button onclick="changePage(7)">Lanjut →</button>
+            </div>
+            <div class="page-number">Halaman 6 dari 13</div>
+        </div>
+
+        <!-- Halaman 7 -->
+        <div class="page" id="page7">
+            <div class="decorative-element">🎀</div>
+            <div class="decorative-element">💗</div>
+            
+            <h2>Rasa Bersalah yang Menempel</h2>
+            <div class="content">
+                <p>Aku takut kehilangan dia. Aku takut jika suatu saat hidup memisahkan kami. Tapi di balik ketakutan itu, aku sadar satu hal pasti: aku mau memperjuangkan hidupku. Bukan hanya untuk diriku, tapi juga untuk masa depan yang ingin kujalani bersamanya. Dia bukan sekadar pacarku. Dia adalah tempat pulang yang tak pernah kuduga datang di hidupku yang sering terasa terlalu berat.</p>
+                <p>Di tengah malam, ketika pikiranku liar, aku selalu teringat kalimatnya: "Sayang, aku mau kamu hidup dengan penuh kebahagiaan." Kalimat itu muncul bersamaan dengan rasa bersalah yang menempel. Aku takut menjadi beban baginya. Aku ingin bilang: "Maaf ya sayang… aku jadi cewek yang ngerepotin kamu." "Maaf ya sayang… aku jadi beban buat kamu." Setiap kali kata itu muncul, aku menahannya. Karena kalau aku benar-benar bilang, dia pasti akan memelukku lebih erat dan bilang aku salah.</p>
+            </div>
+            <div class="navigation">
+                <button onclick="changePage(6)">← Kembali</button>
+                <button onclick="changePage(8)">Lanjut →</button>
+            </div>
+            <div class="page-number">Halaman 7 dari 13</div>
+        </div>
+
+        <!-- Halaman 8 -->
+        <div class="page" id="page8">
+            <div class="decorative-element">🌟</div>
+            <div class="decorative-element">🦄</div>
+            
+            <h2>Alasanku Masih Bertahan</h2>
+            <div class="content">
+                <p>Rasa bersalah selalu ada. Rasa takut selalu ada. Rasa bahwa aku tidak cukup baik, tidak cukup sehat, tidak cukup sempurna… selalu ada. Apalagi ketika tubuhku kembali melemah atau dokter memberi kabar yang menakutkan. Tapi setiap kali ingin menyerah, aku ingat caranya memandangku—bukan dengan belas kasihan, bukan dengan lelah, tapi dengan hangat. Seperti rumah.</p>
+                <p>Dialah alasan aku masih bertahan. Dialah alasan aku tidak jatuh sekeras dulu. Dialah alasan aku merasa hidup ini masih pantas diperjuangkan, meski rasa sakit tak pernah pergi.</p>
+            </div>
+            <div class="navigation">
+                <button onclick="changePage(7)">← Kembali</button>
+                <button onclick="changePage(9)">Lanjut →</button>
+            </div>
+            <div class="page-number">Halaman 8 dari 13</div>
+        </div>
+
+        <!-- Halaman 9 -->
+        <div class="page" id="page9">
+            <div class="decorative-element">😊</div>
+            <div class="decorative-element">🎈</div>
+            
+            <h2>Senyum Tanpa Topeng</h2>
+            <div class="content">
+                <p>Aku tersenyum tanpa topeng bersamanya. Dia lucu, alami, membuatku bahagia tanpa harus pura-pura. Effort-nya tak perlu diragukan, selalu hadir dalam hal-hal kecil tapi bermakna. Dia gentle, berani ketemu dan dekat dengan keluargaku. Aku yang selalu merasa tidak cukup, yang takut menjadi beban… melihat semua itu membuatku percaya: aku pantas dicintai, aku pantas diperjuangkan. Kadang aku tertawa sendiri: "Jangan tanya seberapa sayang aku sama dia lagi ya wkwk." Kalau dijawab… mungkin jawabannya terlalu panjang, terlalu penuh, terlalu "aku". Tapi satu yang pasti: aku sayang banget sama dia. Sampai hidup ini terasa lebih masuk akal karena dia ada.</p>
+                <p>Hari-hari sulit itu datang tanpa diundang. Kadang aku merasa tubuhku memberontak sendiri, rasa sakit seperti menelan seluruh energi yang kupunya. Ada hari-hari ketika bangun saja terasa berat, dan aku ingin menyerah sebelum sempat mulai. Di saat itu, dia selalu ada. Bukan hanya secara fisik, tapi hadir dengan cara yang menenangkan. Kadang aku duduk di sofa, menatap langit-langit, ingin menangis tanpa alasan, dan dia datang, duduk di sampingku, menggenggam tanganku. Tanpa bicara panjang, tanpa memberikan nasihat yang rumit. Cukup sentuhannya, cukup tatapannya… aku merasa lega.</p>
+            </div>
+            <div class="navigation">
+                <button onclick="changePage(8)">← Kembali</button>
+                <button onclick="changePage(10)">Lanjut →</button>
+            </div>
+            <div class="page-number">Halaman 9 dari 13</div>
+        </div>
+
+        <!-- Halaman 10 -->
+        <div class="page" id="page10">
+            <div class="decorative-element">🤝</div>
+            <div class="decorative-element">🌻</div>
+            
+            <h2>Kita Hadapi Ini Bersama</h2>
+            <div class="content">
+                <p>Dia mengerti bahwa aku tidak selalu kuat. Dia mengerti bahwa aku punya hari-hari yang rapuh. Dia mengerti bahwa aku takut merepotkannya. Dia selalu membuatku tertawa, meski kadang aku hanya ingin diam. Candanya bukan sekadar humor biasa—melainkan cara dia mengatakan: "Aku di sini. Kita hadapi ini bersama."</p>
+                <p>Effort-nya hadir dalam hal-hal kecil tapi berarti: mengingatkan aku minum obat tepat waktu, menyediakan makanan yang aku suka, mengantar aku ke rumah sakit atau klinik, bahkan saat itu berarti dia harus menunda rencana lain, menemaniku duduk di ruang tunggu yang sepi, menahan diri dari mengobrol terlalu keras, tapi tetap memberiku rasa aman. Di saat aku menangis setelah pemeriksaan yang menakutkan, dia tidak mencoba menenangkan dengan kata-kata klise. Dia hanya menarikku ke pelukannya dan berkata: "Aku nggak akan kemana-mana. Kita lewati ini bareng-bareng."</p>
+            </div>
+            <div class="navigation">
+                <button onclick="changePage(9)">← Kembali</button>
+                <button onclick="changePage(11)">Lanjut →</button>
+            </div>
+            <div class="page-number">Halaman 10 dari 13</div>
+        </div>
+
+        <!-- Halaman 11 -->
+        <div class="page" id="page11">
+            <div class="decorative-element">📖</div>
+            <div class="decorative-element">🎵</div>
+            
+            <h2>Bahasa yang Hanya Kita Mengerti</h2>
+            <div class="content">
+                <p>Kami belajar bahasa baru, bahasa yang hanya dimengerti oleh kami. Bahasa tatap, sentuhan, dan waktu yang dihabiskan untuk mendengarkan. Tidak semua kata-kata penting. Kadang cukup duduk bersama, berbagi kopi di pagi hari, atau menonton hal-hal kecil di TV. Itu cukup untuk membuat hari-hari sulit terasa ringan. Kami belajar bahwa saling mendukung bukan soal melakukan hal besar. Itu soal kehadiran yang konsisten, ketulusan sederhana, dan cinta nyata—yang membuatku merasa aman dan tak perlu takut menghadapi apapun sendirian.</p>
+                <p>Kadang aku duduk sendiri di malam hari, memikirkan masa depan. Pikiran itu datang tidak hanya tentang diriku sendiri, penyakitku, atau cobaan yang harus aku hadapi. Pikiran itu selalu membawa bayangan dia… bayangan kita. Aku membayangkan kami menua bersama. Bukan sekadar menua secara fisik, tapi melalui hari-hari yang penuh tawa, tangis, perjuangan, dan kebahagiaan sederhana. Aku ingin kita tetap duduk berdua di sofa tua, membicarakan hal-hal kecil, masih saling tersenyum meski rambut kami sudah memutih.</p>
+            </div>
+            <div class="navigation">
+                <button onclick="changePage(10)">← Kembali</button>
+                <button onclick="changePage(12)">Lanjut →</button>
+            </div>
+            <div class="page-number">Halaman 11 dari 13</div>
+        </div>
+
+        <!-- Halaman 12 -->
+        <div class="page" id="page12">
+            <div class="decorative-element">🏡</div>
+            <div class="decorative-element">🌷</div>
+            
+            <h2>Harapan Masa Depan</h2>
+            <div class="content">
+                <p>
+                    Aku ingin hidup bersamanya di dunia yang cuma sekali ini. Aku ingin setiap pagi aku bangun dan menemukan dia ada di sampingku, masih tersenyum, masih peduli, masih menjadi tempat pulang yang aman. Aku ingin kita punya rutinitas kita sendiri—hal-hal kecil yang mungkin terlihat biasa di mata orang lain, tapi bagi aku, itu adalah kebahagiaan.
+                </p>
+                <p>
+                    Aku ingin menjadi perempuan yang bisa dia banggakan. Bukan sempurna. Bukan bebas dari sakit atau kekurangan. Tapi cukup kuat untuk menerima cinta yang dia beri, cukup bersyukur untuk setiap usaha yang dia lakukan demi aku.
+                </p>
+                <p>
+                    Aku ingin dia bahagia. Bahkan jika suatu hari aku tak bisa ada di sampingnya, aku tetap ingin dia tertawa, merasa dicintai, dan hidupnya penuh warna. Tapi di sisi lain, aku ingin hidup ini tetap kita jalani bersama, karena aku tidak bisa membayangkan hidup tanpa dia.
+                </p>
+                <p>
+                    Aku membayangkan kami saling menopang di hari-hari sulit, saling merayakan kemenangan kecil, menertawakan kegagalan, dan tetap berdiri bersama ketika dunia terasa keras. Aku membayangkan rumah kami penuh kehangatan, suara tawa, aroma makanan sederhana yang dibuat dengan cinta, dan malam-malam panjang di mana kami berbagi mimpi dan rahasia yang hanya kami mengerti.
+                </p>
+            </div>
+            <div class="navigation">
+                <button onclick="changePage(11)">← Kembali</button>
+                <button onclick="changePage(13)">Lanjut →</button>
+            </div>
+            <div class="page-number">Halaman 12 dari 13</div>
+        </div>
+
+        <!-- Halaman 13 -->
+        <div class="page" id="page13">
+            <div class="decorative-element">💖</div>
+            <div class="decorative-element">✨</div>
+            
+            <h2>Untuk Kita, Selamanya</h2>
+            <div class="content">
+                <p>
+                    Aku ingin kita tetap menjadi “kami” meski hidup terus berubah. Aku ingin cinta ini tetap nyata, bukan sekadar kata, tapi tindakan yang konsisten. Aku ingin dia tahu, setiap detik, bahwa aku mencintainya lebih dari apapun. Dan aku ingin dia tetap mencintaiku, bukan karena aku sempurna, tapi karena aku aku—perempuan yang kadang sulit dipahami, kadang rapuh, kadang sakit… tapi tetap mencintainya sepenuh hati.
+                </p>
+                <p>
+                    Aku tahu masa depan tidak pernah pasti. Aku tahu hidup akan terus menghadirkan tantangan, mungkin lebih berat dari hari-hari ini. Tapi aku percaya satu hal: selama dia ada, selama aku masih bisa memegang tangannya, aku bisa menghadapi apapun.
+                </p>
+                <p>
+                    Harapan masa depan itu sederhana tapi besar: aku ingin bahagia bersamanya, aku ingin hidup bersamanya, aku ingin setiap hari yang cuma sekali ini, aku jalani bersamanya. Dan jika Tuhan mengizinkan… aku ingin sampai tua, tetap memegang tangannya, tetap tersenyum, tetap merasa aman, nyaman, dan utuh… karena cinta kami telah menjadi rumah yang tidak bisa digantikan oleh apapun di dunia ini.
+                </p>
+
+                <p style="text-align:center; font-style:italic; color:#ff69b4; margin-top:30px;">
+                    Aku sayang kamu. Selalu.
+                </p>
+            </div>
+            <div class="navigation">
+                <button onclick="changePage(12)">← Kembali</button>
+                <button onclick="changePage(1)">Ulangi 💕</button>
+            </div>
+            <div class="page-number">Halaman 13 dari 13</div>
+        </div>
+    </div>
+
+    <script>
+    /* ===============================
+    KONFIGURASI PASSWORD
+    ================================ */
+    const CORRECT_PASSWORD = "280925";
+
+    /* ===============================
+    CEK PASSWORD
+    ================================ */
+    function checkPassword() {
+        const input = document.getElementById("passwordInput");
+        const error = document.getElementById("errorText");
+        const overlay = document.getElementById("passwordOverlay");
+        const box = document.getElementById("passwordBox");
+
+        if (input.value === CORRECT_PASSWORD) {
+            // 💌 Fade out kalau benar
+            error.style.display = "none";
+            overlay.style.opacity = "1";
+            overlay.style.transition = "opacity 1s ease";
+
+            setTimeout(() => {
+                overlay.style.opacity = "0";
+            }, 100);
+
+            setTimeout(() => {
+                overlay.style.display = "none";
+            }, 1100);
+
+        } else {
+            // 🌸 Shake kalau salah
+            error.style.display = "block";
+
+            box.classList.remove("shake"); // reset
+            void box.offsetWidth;          // trigger reflow
+            box.classList.add("shake");
+
+            input.value = "";
+        }
+    }
+
+    /* ===============================
+    NAVIGASI HALAMAN
+    ================================ */
+    function changePage(pageNumber) {
+        const pages = document.querySelectorAll(".page");
+        pages.forEach(page => page.classList.remove("active"));
+
+        const target = document.getElementById("page" + pageNumber);
+        if (target) target.classList.add("active");
+    }
+    </script>
+</body>
+</html>
