@@ -16,6 +16,13 @@
             animation: fadeIn 0.6s ease;
         }
 
+#passwordOverlay {
+            position: fixed;
+            inset: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
         /* 💌 fade out setelah benar */
         .fade-out {
             animation: fadeOut 0.8s forwards;
@@ -37,13 +44,12 @@
         body {
             font-family: 'Georgia', serif;
             background: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 100%);
-            min-height: 100vh;
+            height: 100vh;          /* ✅ GANTI dari min-height */
+            overflow: hidden;       /* ✅ KUNCI SCROLL */
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* penting */
-            padding: 20px;
+            align-items: center;
             position: relative;
-            overflow-y: auto; /* ✅ scroll hidup */
         }
 
         body::before {
@@ -719,3 +725,4 @@
     </script>
 </body>
 </html>
+
